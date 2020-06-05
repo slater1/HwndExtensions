@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>HwndExtensions.NetCore</id>
+    <version>1.0.2</version>
+    <title>HwndExtensions</title>
+    <authors>Doug Slater</authors>
+    <owners>Doug Slater</owners>
+    <license type="file">License.txt</license>
+    <projectUrl>https://github.com/slater1/HwndExtensions</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>WPF library supporting layers (adornments) over any HWND hosted by an HwndHost</description>
+    <summary>WPF library supporting layers (adornments) over any HWND hosted by an HwndHost</summary>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2020 Doug Slater</copyright>
+    <tags>HWND HwndHost WPF Win32</tags>
+    <dependencies>
+      <group targetFramework="netcoreapp3.1" >
+        <dependency id="Microsoft.Xaml.Behaviors.Wpf" version="1.1.19" />
+      </group>
+    </dependencies>
+    <references>
+      <group targetFramework="netcoreapp3.1" >
+        <reference file="HwndExtensions.dll" />
+      </group>
+    </references>
+  </metadata>
+  
+  <files>
+    <file src="..\License.txt" target="License.txt" />
+    
+    <file src="..\HwndExtensions\bin\Release\netcoreapp3.1\HwndExtensions.dll" target="lib\netcoreapp3.1" />
+    <file src="..\HwndExtensions\bin\Release\netcoreapp3.1\HwndExtensions.pdb" target="lib\netcoreapp3.1" />
+    <file src="..\HwndExtensions\bin\Release\netcoreapp3.1\HwndExtensions.deps.json" target="lib\netcoreapp3.1" />
+
+    <file src="..\HwndExtensions\bin\Release\netcoreapp3.1\HwndExtensions.dll" target="ref\netcoreapp3.1" />
+
+  </files>
+
+</package>
