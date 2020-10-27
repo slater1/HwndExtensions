@@ -13,7 +13,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: windows-2019
+    runs-on: windows-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -23,11 +23,9 @@ jobs:
         
       - name: Setup .NET
         uses: actions/setup-dotnet@v1.7.2
-        with:
-          dotnet-version: 3.1
           
       - name: Build solution
-        run: dotnet build --configuration Release
+        run: dotnet build .\HwndExtensions\HwndExtensions.csproj --configuration Release
         
       - name: Pack and publish NuGet packages
         shell: pwsh
