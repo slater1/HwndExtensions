@@ -32,5 +32,6 @@ jobs:
         env:
           HWNDEXTENSIONS_NUGET_KEY: ${{ secrets.NUGET_KEY }}
         run: |
-          .\NuGet\nuget-pack.ps1
-          .\NuGet\nuget-publish.ps1
+          cd NuGet
+          .\nuget-pack.ps1
+          .\nuget-publish.ps1
