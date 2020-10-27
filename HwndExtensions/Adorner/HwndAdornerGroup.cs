@@ -60,9 +60,12 @@ namespace HwndExtensions.Adorner
                 Activate();
             }
 
-            if (!m_adornersInGroup.Contains(adorner))
+            lock (m_adornersInGroup)
             {
-                m_adornersInGroup.Add(adorner);
+                if (!m_adornersInGroup.Contains(adorner))
+                {
+                    m_adornersInGroup.Add(adorner);
+                }
             }
 
             if (m_owned)
@@ -88,7 +91,12 @@ namespace HwndExtensions.Adorner
 
         internal bool RemoveAdorner(HwndAdorner adorner)
         {
-            var res = m_adornersInGroup.Remove(adorner);
+            bool res = false;
+
+            lock (m_adornersInGroup)
+            {
+                res = m_adornersInGroup.Remove(adorner);
+            }
 
             if (m_owned)
             {
@@ -149,17 +157,23 @@ namespace HwndExtensions.Adorner
 
         private void SetOwnership()
         {
-            foreach (var adorner in m_adornersInGroup)
+            lock (m_adornersInGroup)
             {
-                SetOwnership(adorner);
+                foreach (var adorner in m_adornersInGroup)
+                {
+                    SetOwnership(adorner);
+                }
             }
         }
 
         private void InvalidateAppearance()
         {
-            foreach (var adorner in m_adornersInGroup)
+            lock (m_adornersInGroup)
             {
-                adorner.InvalidateAppearance();
+                foreach (var adorner in m_adornersInGroup)
+                {
+                    adorner.InvalidateAppearance();
+                }
             }
         }
 
@@ -170,9 +184,12 @@ namespace HwndExtensions.Adorner
 
         private void RemoveOwnership()
         {
-            foreach (var adorner in m_adornersInGroup)
+            lock (m_adornersInGroup)
             {
-                RemoveOwnership(adorner);
+                foreach (var adorner in m_adornersInGroup)
+                {
+                    RemoveOwnership(adorner);
+                }
             }
         }
 
@@ -187,36 +204,43 @@ namespace HwndExtensions.Adorner
             if(root == null) return;
 
             var rect = GetRectFromRoot(root);
-            foreach (var adorner in m_adornersInGroup)
+
+            lock (m_adornersInGroup)
             {
-                adorner.UpdateOwnerPosition(rect);
+                foreach (var adorner in m_adornersInGroup)
+                {
+                    adorner.UpdateOwnerPosition(rect);
+                }
             }
         }
 
         private void SetZOrder()
         {
-            // getting the hwnd above the owner (in win32, the prev hwnd is the one visually above)
-            var hwndAbove = Win32.GetWindow(m_ownerSource.Handle, Win32.GW_HWNDPREV);
+            lock (m_adornersInGroup)
+            {
+                // getting the hwnd above the owner (in win32, the prev hwnd is the one visually above)
+                var hwndAbove = Win32.GetWindow(m_ownerSource.Handle, Win32.GW_HWNDPREV);
 
-            if (hwndAbove == IntPtr.Zero && HasAdorners)
+                if (hwndAbove == IntPtr.Zero && HasAdorners)
                 // owner is the Top most window
-            {
-                // randomly selecting an owned hwnd
-                var owned = m_adornersInGroup.First().Handle;
-                // setting owner after (visually under) it 
-                Win32.SetWindowPos(m_ownerSource.Handle, owned, 0, 0, 0, 0, SET_ONLY_ZORDER);
+                {
+                    // randomly selecting an owned hwnd
+                    var owned = m_adornersInGroup.First().Handle;
+                    // setting owner after (visually under) it 
+                    Win32.SetWindowPos(m_ownerSource.Handle, owned, 0, 0, 0, 0, SET_ONLY_ZORDER);
 
-                // now this is the 'above' hwnd
-                hwndAbove = owned;
-            }
+                    // now this is the 'above' hwnd
+                    hwndAbove = owned;
+                }
 
-            // inserting all adorners between the owner and the hwnd initially above it
-            // currently not preserving any previous z-order state between the adorners (unsupported for now)
-            foreach (var adorner in m_adornersInGroup)
-            {
-                var handle = adorner.Handle;
-                Win32.SetWindowPos(handle, hwndAbove, 0, 0, 0, 0, SET_ONLY_ZORDER);
-                hwndAbove = handle;
+                // inserting all adorners between the owner and the hwnd initially above it
+                // currently not preserving any previous z-order state between the adorners (unsupported for now)
+                foreach (var adorner in m_adornersInGroup)
+                {
+                    var handle = adorner.Handle;
+                    Win32.SetWindowPos(handle, hwndAbove, 0, 0, 0, 0, SET_ONLY_ZORDER);
+                    hwndAbove = handle;
+                }
             }
         }
 
@@ -252,7 +276,10 @@ namespace HwndExtensions.Adorner
 
         private bool IsSibling(IntPtr hwnd)
         {
-            return m_adornersInGroup.Exists(o => o.Handle == hwnd);
+            lock (m_adornersInGroup)
+            {
+                return m_adornersInGroup.Exists(o => o.Handle == hwnd);
+            }
         }
 
         private IntPtr OwnerHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
